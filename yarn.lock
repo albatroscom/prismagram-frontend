@@ -7280,9 +7280,9 @@ react-side-effect@^1.1.0:
     exenv "^1.2.1"
     shallowequal "^1.0.1"
 
-react-toastify@^5.2.1:
-  version "5.2.1"
-  resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-5.2.1.tgz#faa05bc4cd5066ee50bf56c7f8b8fd1492e71aca"
+react-toastify@^5.3.1:
+  version "5.3.1"
+  resolved "https://registry.yarnpkg.com/react-toastify/-/react-toastify-5.3.1.tgz#7438eb0d284cb992d6c485b00b539bcb362c0868"
   dependencies:
     "@babel/runtime" "^7.4.2"
     classnames "^2.2.6"
