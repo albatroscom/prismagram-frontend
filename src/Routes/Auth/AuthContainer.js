@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AuthPresenter from './AuthPresenter'
 import useInput from '../../Hooks/useInput';
 import { useMutation } from 'react-apollo-hooks';
-import { LOG_IN, CREATE_ACCOUNT } from './AuthQueries';
+import { LOG_IN, CREATE_ACCOUNT, CONFIRM_SECRET, LOCAL_LOG_IN } from './AuthQueries';
 import { toast } from 'react-toastify';
 
 export default () => {
@@ -10,43 +10,81 @@ export default () => {
     const userName = useInput("");
     const firstName = useInput("");
     const lastName = useInput("");
+    const secret = useInput("");
     const email = useInput("");
-    const requestSecret = useMutation(LOG_IN, { 
-        update: (_, {data}) => {
-            const { requestSecret } = data;
-            if(!requestSecret){
-                toast.error("You don't have an account yet, please create one!");
-                setTimeout(() => setAction("signUp"), 3000);
-            }
-        },
+    const requestSecretMutation = useMutation(LOG_IN, { 
         variables: { email: email.value }
     });
-    const createAccount = useMutation(CREATE_ACCOUNT, {
+    const createAccountMutation = useMutation(CREATE_ACCOUNT, {
         variables: {
             email: email.value,
             userName: userName.value,
             firstName: firstName.value,
             lastName: lastName.value
         }
-    })
+    });
+    const confirmSecretMutation = useMutation(CONFIRM_SECRET, {
+        variables: {
+            email: email.value,
+            secret: secret.value
+        }
+    });
+    // variable는 아직 없다
+    const localLogInMutation = useMutation(LOCAL_LOG_IN);
 
-    const onSubmit = e => {
+    const onSubmit = async e => {
         e.preventDefault();
         if(action === 'logIn'){
             if(email.value !== ''){
-                requestSecret();
+                try {
+                    const { data: { requestSecret } } = await requestSecretMutation();
+                    if(!requestSecret){
+                        toast.error(`You don't have an account yet, create one`);
+                        setTimeout(() => setAction('signUp'), 3000);
+                    } else {
+                        toast.success('Check your inbox for your login secret');
+                        setAction('confirm');
+                    }
+                } catch (error) {
+                    toast.error(`Can't request secret, try again`);
+                }
             } else {
-                toast.error("Email is requied!");
+                toast.error("Email is required");
             }
         } else if(action === 'signUp'){
             if(email.value !== '' &&
                 userName.value !== '' &&
                 firstName.value !== '' &&
                 lastName.value !== '') {
-                createAccount();
+                    try {
+                        const { data: { createAccount } } = await createAccountMutation();
+                        if(!createAccount){
+                            toast.error("Can't create account");
+                        } else {
+                            toast.success('Account created! Log In Now!');
+                            setTimeout(() => setAction('logIn'), 3000);
+                        }
+                    } catch (e) {
+                        toast.error(e.message);
+                    }
             } else {
                 toast.error('All field are required!');
             }
+        } else if(action === 'confirm') {
+            if(secret.value !== '') {
+                    try {
+                        const { data: { confirmSecret: token } } = await confirmSecretMutation();
+                        console.log(token);
+                        // To Do: log user in
+                        if(token !== '' && token !== undefined){
+                            localLogInMutation({ variables: { token } });
+                        } else {
+                            throw Error();
+                        }
+                    } catch {
+                        toast.error(`Cant't confirm secret, please check again`);
+                    }
+                }
         }
     };
 
@@ -57,7 +95,8 @@ export default () => {
         userName={userName} 
         firstName={firstName}
         lastName={lastName}
-        email={email} 
+        email={email}
+        secret={secret}
         onSubmit={onSubmit}
     />);
 };
