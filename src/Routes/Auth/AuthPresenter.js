@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
+import Helmet from 'react-helmet';
 import Input from '../../Components/Input';
 import Button from '../../Components/Button';
 // import useInput from '../../Hooks/useInput';
+
 
 const Wrapper = styled.div`
     min-height: 80vh;
@@ -61,12 +63,21 @@ export default ({
         <Wrapper>
             <Form>
                 {action === 'logIn' && (
+                <>
+                    <Helmet>
+                        <title>Log In | Prismagram</title>
+                    </Helmet>
                     <form onSubmit={onSubmit}>
                         <Input placeholder={"Email"} {...email} type="email" />
                         <Button text={"Log in"} />
                     </form>
+                </>
                 )}
                 {action === 'signUp' && (
+                <>
+                    <Helmet>
+                        <title>Sign Up | Prismagram</title>
+                    </Helmet>
                     <form onSubmit={onSubmit}>
                         <Input placeholder={"First name"} {...firstName} />
                         <Input placeholder={"Last name"} {...lastName} />
@@ -74,12 +85,18 @@ export default ({
                         <Input placeholder={"Username"} {...userName} />
                         <Button text={"Sign up"} />
                     </form>
+                </>
                 )}
                 {action === 'confirm' && (
+                <>
+                    <Helmet>
+                        <title>Confirm Secret | Prismagram</title>
+                    </Helmet>
                     <form onSubmit={onSubmit}>
                         <Input placeholder="Paste your secret" required {...secret} />
                         <Button text={"Confirm"} />
                     </form>
+                </>
                 )}
             </Form>
             {action !== 'confirm' && (
