@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { useMutation } from 'react-apollo-hooks';
 import useInput from '../../Hooks/useInput';
 import PostPresenter from './PostPresenter';
+import { TOGGLE_LIKE, ADD_COMMENT } from './PostQueries';
 
 const PostContainer = ({ 
     id,
@@ -19,18 +20,13 @@ const PostContainer = ({
         const [likeCountS, setLikeCount] = useState(likeCount);
         const [currentItem, setCurrentItem] = useState(0);
         const comment = useInput('');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        // const slide = () => {
-        //     const totalFiles = files.length;
-        //     if (currentItem === totalFiles - 1) {
-        //         setTimeout(() => setCurrentItem(0), 3000);
-        //     } else {
-        //         setTimeout(() => setCurrentItem(currentItem + 1), 3000);
-        //     }
-        // };
-        // useEffect(() => {
-        //     slide();
-        // }, [currentItem, slide]);
+        const toggleLikeMutation = useMutation(TOGGLE_LIKE, {
+            variables: { postId: id }
+        });
+        const addCommentMutation = useMutation(ADD_COMMENT, {
+            variables: { postId: id, text: comment.value }
+        });
+
         const slidePrev = () => {
             const totalFiles = files.length;
             if (currentItem === 0) {
@@ -47,6 +43,17 @@ const PostContainer = ({
                 setCurrentItem(currentItem + 1);
             }
         };
+        const toggleLike = () => {
+            toggleLikeMutation();
+            if (isLikedS === true) {
+                setIsLiked(false);
+                setLikeCount(likeCountS - 1);
+            } else {
+                setIsLiked(true);
+                setLikeCount(likeCountS + 1);
+            }
+        };
+
         return (
             <PostPresenter
             user={user}
@@ -63,6 +70,7 @@ const PostContainer = ({
             currentItem={currentItem}
             slideNext={slideNext}
             slidePrev={slidePrev}
+            toggleLike={toggleLike}
             />
         );
 };
