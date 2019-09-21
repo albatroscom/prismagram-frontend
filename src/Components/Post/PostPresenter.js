@@ -6,7 +6,7 @@ import Avatar from '../Avatar';
 import { 
     HeartFull, 
     HeartEmpty, 
-    Comment, 
+    Comment as CommentIcon,
     User,
     Prev,
     Next,
@@ -103,6 +103,17 @@ const Textarea = styled(TextareaAutosize)`
     }
 `;
 
+const Comments = styled.ul`
+    margin-top: 10px;
+`;
+
+const Comment = styled.li`
+    margin-bottom: 7px;
+    span { 
+        margin-right: 5px;
+    }
+`;
+
 export default ({
     user: { userName, avatar },
     location,
@@ -115,6 +126,8 @@ export default ({
     slidePrev,
     slideNext,
     toggleLike,
+    onKeyPress,
+    comments
 }) => (
     <Post>
         <Header>
@@ -147,12 +160,27 @@ export default ({
                     {isLiked ? <HeartFull /> : <HeartEmpty />}
                 </Button>
                 <Button>
-                    <Comment />
+                    <CommentIcon />
                 </Button>
             </Buttons>
             <FatText text={likeCount === 1 ? '1 like' : `${likeCount} likes`} />
+            { comments && (
+                <Comments>
+                    {comments.map(comment => (
+                        <Comment key={comment.id}>
+                            <FatText text={comment.user.userName} />
+                            {comment.text}
+                        </Comment>
+                    ))}
+                </Comments>
+            )}
             <TimeStamp>{createdAt}</TimeStamp>
-            <Textarea placeholder={"Add a Comment..."} {...newComment}></Textarea>
+            <Textarea 
+                placeholder={"Add a Comment..."} 
+                value={newComment.value}
+                onChange={newComment.onChange}
+                onKeyUp={onKeyPress}
+                />
         </Meta>
     </Post>
 );
