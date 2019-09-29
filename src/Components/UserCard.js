@@ -3,8 +3,9 @@ import styled from 'styled-components';
 import PropTypes from 'prop-types';
 import Avatar from './Avatar';
 import FatText from './FatText';
-import Button from './Button';
+// import Button from './Button';
 import { Link } from 'react-router-dom';
+import FollowButton from './FollowButton';
 
 const Card = styled.div`
     ${props => props.theme.whiteBox}
@@ -23,17 +24,18 @@ const ExtendLink = styled(Link)`
     margin-bottom: 10px;
 `;
 
-const UserCard = ({ userName, isFollowing, url, isSelf }) => (
+const UserCard = ({ id, userName, isFollowing, url, isSelf }) => (
     <Card>
         <ExtendAvatar url={url} size={"md"} />
         <ExtendLink to={`/${userName}`}>
             <FatText text={userName} />
         </ExtendLink>
-        {!isSelf && <Button text={isFollowing ? "Unfollow" : "Follow"} />}
+        {!isSelf && <FollowButton id={id} isFollowing={isFollowing} />}
     </Card>
 );
 
 UserCard.propTypes = {
+    id: PropTypes.string.isRequired,
     userName: PropTypes.string.isRequired,
     isFollowing: PropTypes.bool.isRequired,
     url: PropTypes.string.isRequired,
